@@ -1,0 +1,103 @@
+# =========================
+# LOCAL-ONLY (not in repo)
+# =========================
+
+docs/
+Presentations/
+notebooks/
+report/
+
+# =========================
+# RAW DATASETS
+# =========================
+
+data/raw/D-SAV360/gaze/*
+data/raw/D-SAV360/head/*
+data/raw/D-SAV360/saliency/*
+data/raw/D-SAV360/videos/*
+data/raw/D-SAV360/audio/*
+data/raw/D-SAV360/audio_energy_maps/*
+data/raw/D-SAV360/optical_flow/*
+
+# keep data folder placeholders
+!data/**/.gitkeep
+
+# =========================
+# PROCESSED DATA
+# =========================
+
+data/processed/**/*.npy
+data/processed/**/*.csv
+
+# =========================
+# TRAINING OUTPUTS / MODELS
+# =========================
+
+results/**/*.npy
+results/**/*.pt
+results/**/*.pth
+results/**/*.tar
+results/**/model.pt
+
+# keep small summaries/results if needed
+!results/**/*.csv
+!results/**/.gitkeep
+
+# ignore detailed per-sample result csvs
+results/**/*errors*.csv
+results/gaze_anomalies.csv
+
+# =========================
+# EXTERNAL REPOS
+# =========================
+
+external/
+
+# =========================
+# VIDEOS / IMAGES / ARCHIVES
+# =========================
+
+*.mp4
+*.avi
+*.mov
+*.zip
+*.png
+*.jpg
+*.jpeg
+
+# =========================
+# PYTHON
+# =========================
+
+__pycache__/
+*.pyc
+
+# =========================
+# ENVIRONMENTS / IDE
+# =========================
+
+.venv/
+env/
+conda_env/
+.vscode/
+
+# =========================
+# macOS
+# =========================
+
+.DS_Store
+
+# =========================
+# JUPYTER
+# =========================
+
+.ipynb_checkpoints/
+
+# =========================
+# LOGS / CHECKPOINTS
+# =========================
+
+logs/
+checkpoints/
+*.ckpt
+*.h5

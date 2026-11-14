@@ -1,0 +1,4 @@
+method,samples,mean_angular_error_deg,median_angular_error_deg,std_angular_error_deg
+HAGI + Peak AEM UV Fold 1 - All,200000,8.790700912475586,7.430161476135254,6.140158176422119
+HAGI + Peak AEM UV Fold 1 - Fixations Only,166570,8.496733665466309,7.171350479125977,5.840018272399902
+HAGI + Peak AEM UV Fold 1 - Saccades / Non-Fixations,33430,10.255447387695312,8.846933364868164,7.282973289489746

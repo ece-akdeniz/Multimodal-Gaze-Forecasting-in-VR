@@ -1,0 +1,7 @@
+id,method,audio_source,audio_feature,head_window,audio_window,train_targets,mean_angular_error_deg,fold,notes
+1,HAGI++ head-only,none,none,10 head frames,none,all gaze,11.50,0,experimental baseline run
+2,HAGI++ + full AEM t+1,AEM PNG,128-dim spatial map next frame only,10 head + 1 AEM,1 future frame,all gaze,11.01,0,best dense-AEM result
+3,HAGI++ + full AEM t+1 + dropout 0.3,AEM PNG,128-dim spatial map,10 head + 1 AEM,1 future frame,all gaze,11.70,0,dropout regularization
+4,HAGI++ + AEM sequence future,AEM PNG,128-dim t+1 to t+10,30 head + 10 AEM,10 future frames,fixation-only,11.50,0,approximate from exploration table
+5,HAGI++ + AEM past+future,AEM PNG,128-dim t-10 to t + t+1 to t+10,30 head + 20 AEM,past+future,fixation-only,11.40,0,approximate; feature normalization
+6,HAGI++ + ambisonic direction,raw WAV,3D xyz from W/X/Y/Z t+1 to t+10,30 head + 10 audio,10 future frames,fixation-only,11.60,0,approximate from exploration table

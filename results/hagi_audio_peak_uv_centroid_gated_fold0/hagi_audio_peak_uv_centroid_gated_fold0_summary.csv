@@ -1,0 +1,4 @@
+method,samples,mean_angular_error_deg,median_angular_error_deg,std_angular_error_deg
+HAGI + Peak AEM UV robustness centroid_gated Fold 0 - All,200000,11.430281639099121,10.22154426574707,7.092167377471924
+HAGI + Peak AEM UV robustness centroid_gated Fold 0 - Fixations Only,165563,11.241482734680176,10.072378158569336,6.832065105438232
+HAGI + Peak AEM UV robustness centroid_gated Fold 0 - Saccades / Non-Fixations,34437,12.337963104248047,10.916773796081543,8.16796875

@@ -1,0 +1,4 @@
+method,samples,mean_angular_error_deg,median_angular_error_deg,std_angular_error_deg
+HAGI Regression Fold 3 - All,200000,9.95893669128418,8.67241096496582,6.452634811401367
+HAGI Regression Fold 3 - Fixations Only,168637,9.714583396911621,8.465568542480469,6.222311496734619
+HAGI Regression Fold 3 - Saccades / Non-Fixations,31363,11.272810935974121,9.911911010742188,7.435476303100586

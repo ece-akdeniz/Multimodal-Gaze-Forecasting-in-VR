@@ -1,0 +1,4 @@
+method,samples,mean_angular_error_deg,median_angular_error_deg,std_angular_error_deg
+HAGI++ Full AEM t+1 - All,200000,11.015125,9.680451,6.996136
+HAGI++ Full AEM t+1 - Fixations Only,165563,10.735897,9.460410,6.640439
+HAGI++ Full AEM t+1 - Saccades Only,34437,12.357571,10.752939,8.371897

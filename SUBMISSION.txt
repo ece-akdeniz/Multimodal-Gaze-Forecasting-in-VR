@@ -1,0 +1,35 @@
+Final Code Submission — Fachpraktikum Collaborative AI, Group 6
+================================================================
+
+GitLab repository:
+  https://git.hcics.simtech.uni-stuttgart.de/lecture-projects/fapra-ss26_group6
+
+Project path (GitLab ID):
+  lecture-projects/fapra-ss26_group6
+
+Branch:
+  main
+
+Submission tag:
+  submission
+
+Final commit (full SHA — use as submission ID):
+  8211c1f55403ee3c56904a05c7da7890bf23cbf8
+
+Final commit (short):
+  8211c1f
+
+Commit message:
+  Drop docs, presentations, and notebooks from the repo.
+
+Tagged on:
+  2026-07-05
+
+Authors:
+  Ece Akdeniz, Samiksha Ingle
+
+Direct commit link:
+  https://git.hcics.simtech.uni-stuttgart.de/lecture-projects/fapra-ss26_group6/-/commit/8211c1f55403ee3c56904a05c7da7890bf23cbf8
+
+Direct tag link (after push):
+  https://git.hcics.simtech.uni-stuttgart.de/lecture-projects/fapra-ss26_group6/-/tags/submission
