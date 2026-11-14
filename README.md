@@ -34,12 +34,10 @@ Predict the **next gaze direction** (3D unit vector) from a short input window. 
 
 ## Results
 
-Mean angular error in degrees (lower is better), on all gaze samples unless noted.
+Angular error is the angle, in degrees, between the predicted gaze direction and the recorded direction. We report the mean over evaluation samples; a lower value is a more accurate forecast. A fold is one train–test partition of D-SAV360. Fold 0 is the partition used to compare representations. The difference column is relative to head-only HAGI++, a GRU trained on the previous ten head orientations. An audio energy map (AEM) locates sound energy on the sphere. Its peak is the loudest direction, taken 0.5 s, 1 s, and 2 s ahead, and written either as a 3D unit vector (XYZ) or as coordinates on the spherical image (UV). RMS is the root-mean-square level of the current audio channels, without a spatial layout. The head proxy sets the predicted gaze equal to the current head direction. DGaze is the convolutional predictor of Hu et al.; the saliency variant also receives a visual attention map.
 
-### Fold 0
-
-| Method | Error (°) | Δ vs. head-only HAGI++ |
-|--------|----------:|-----------------------:|
+| Method | Angular error (°) | Difference from head-only HAGI++ (°) |
+|--------|------------------:|-------------------------------------:|
 | Head proxy | 12.90 | +1.65 |
 | DGaze, head only | 19.41 | +8.16 |
 | DGaze, head and saliency | 21.86 | +10.61 |
@@ -48,20 +46,18 @@ Mean angular error in degrees (lower is better), on all gaze samples unless note
 | HAGI++ and peak AEM, XYZ | 10.57 | −0.68 |
 | HAGI++ and peak AEM, UV | 10.36 | −0.89 |
 
-Future peak AEM in UV is the best result on this fold. Current-frame RMS does not improve on head motion alone.
+Head motion alone already reaches 11.25°. The future AEM peak in UV lowers this to 10.36°. The same peak in XYZ helps by less, and current-frame RMS stays above the head-only model. DGaze is evaluated with its original sample cap, and the head proxy on the full corpus, so those two rows are references rather than matched runs.
 
-### Five-fold cross-validation
-
-Mean ± standard deviation across folds.
+The same head-only and peak-UV models were then trained on each of five partitions. Each entry is the mean of the five fold-wise errors, with the standard deviation across folds. Fixations are intervals of stable gaze; saccades are the rapid movements between them.
 
 | Model | All gaze | Fixations | Saccades |
 |--------|----------:|----------:|---------:|
 | HAGI++, head only | 10.69 ± 1.31 | 10.48 ± 1.35 | 11.72 ± 1.11 |
 | HAGI++ and peak AEM, UV | 10.41 ± 1.03 | 10.18 ± 1.06 | 11.47 ± 0.86 |
 
-Mean reduction on all gaze: 0.28°. The gain is small relative to the variation across folds.
+The average reduction on all gaze is 0.28°, and the same direction appears for fixations and for saccades. The spread across folds is about one degree, so the improvement is small and not present on every partition.
 
-On fold 0, retaining samples with a missing AEM peak raises error to 11.34–11.43°. A dense next-frame AEM reaches 11.01°, still above peak UV.
+Two further fold-0 checks use the same error. The primary model drops a sample when no AEM peak can be read. Keeping those samples, and marking the peak as missing, raises the error to 11.34–11.43°. Replacing the peak with the full next-frame AEM, resized to 128 dimensions, reaches 11.01°, which remains above the UV peak.
 
 ---
 
