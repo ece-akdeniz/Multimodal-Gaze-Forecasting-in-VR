@@ -34,62 +34,42 @@ Predict the **next gaze direction** (3D unit vector) from a short input window. 
 
 ## Results
 
-### Fold 0 (all gaze) — primary pipeline (`scripts/`)
+The reported quantity is mean angular error, in degrees, between the predicted gaze direction and the measured direction. Lower values indicate a more accurate forecast. The principal comparison is whether a compact encoding of the future audio-energy peak improves a head-only sequence model. Unless noted, models are trained and evaluated on all gaze samples.
 
-| Method | Error (°) | vs HAGI++ baseline |
-|--------|----------:|-------------------:|
-| Head Proxy | 12.90 | +1.47 |
-| DGaze Head-only | 19.41 | +8.16 |
-| DGaze Full + saliency (nearest, 300k) | 21.86 | +10.61 |
-| **HAGI++ regression** | **11.25** | — |
-| HAGI++ + audio RMS | 11.57 | +0.32 |
-| HAGI++ + peak AEM XYZ | 10.57 | −0.68 |
-| **HAGI++ + peak AEM UV** *(primary)* | **10.36** | **−0.89** |
+### Fold 0
 
-HAGI++ head-only clearly beats Head Proxy and DGaze on fold 0. **Visual saliency (DGaze Full) does not help** under our setup. **Future peak AEM (UV)** gives the largest gain; scalar RMS does not.
+Fold 0 was used to compare input representations. Head orientation already accounts for most of the predictable signal. A head-only GRU regressor attains 11.25°, against 12.90° for a non-learned head proxy and 19.41° for the head-only DGaze network. Providing DGaze with visual saliency maps increases the error to 21.86° in the convolutional pipeline used here. Those two reference systems are not strictly matched to the HAGI++ runs: DGaze follows its original sample cap, and the head proxy is computed on the full synchronized corpus.
 
-*Note: DGaze runs use the original CNN pipeline and may differ in sample caps; Head Proxy is evaluated on the full synchronized corpus.*
+Audio reduces error only when it carries future spatial structure. Channel-wise RMS at the current frame yields 11.57°. Representing the audio-energy peak at +0.5 s, +1 s, and +2 s as a 3D unit vector lowers the error to 10.57°. The same peak in UV coordinates, the primary model, reaches 10.36°, which is 0.89° below the head-only regressor.
 
-### Fold 0 — peak UV robustness variants (`scripts/`, all gaze)
+| Method | Angular error (°) | Difference from head-only HAGI++ (°) |
+|--------|------------------:|-------------------------------------:|
+| Head proxy | 12.90 | +1.65 |
+| DGaze, head only | 19.41 | +8.16 |
+| DGaze, head and visual saliency | 21.86 | +10.61 |
+| HAGI++, head only | 11.25 | — |
+| HAGI++ and channel RMS | 11.57 | +0.32 |
+| HAGI++ and peak AEM, XYZ | 10.57 | −0.68 |
+| HAGI++ and peak AEM, UV | 10.36 | −0.89 |
 
-Same future horizons (+0.5 / +1 / +2 s); **keep** samples with missing AEM (zero coords + validity mask) instead of dropping them.
+### Five-fold cross-validation
 
-| Method | Error (°) | vs primary peak UV |
-|--------|----------:|-------------------:|
-| **HAGI++ + peak AEM UV** *(primary)* | **10.36** | — |
-| + peak UV, argmax, gated | 11.34 | +0.98 |
-| + peak UV, centroid, gated | 11.43 | +1.07 |
-| + peak UV, centroid, concat | 11.43 | +1.08 |
+The head-only regressor and the primary peak-UV model were then trained on each of the five AViSal360 folds. The table gives the mean and standard deviation across folds.
 
-Argmax peak beats centroid (+0.09°); gating vs concat makes no practical difference. All three variants are **worse than primary** — dropping unreliable AEM frames works better than masking/gating. Fold 0 only; not run at 5-fold scale.
+| Model | All gaze | Fixations | Saccades |
+|--------|----------:|----------:|---------:|
+| HAGI++, head only | 10.69 ± 1.31 | 10.48 ± 1.35 | 11.72 ± 1.11 |
+| HAGI++ and peak AEM, UV | 10.41 ± 1.03 | 10.18 ± 1.06 | 11.47 ± 0.86 |
 
-**Files:** `results/hagi_audio_peak_uv_argmax_gated_fold0/` · `results/hagi_audio_peak_uv_centroid_gated_fold0/` · `results/hagi_audio_peak_uv_centroid_concat_fold0/` · `results/robustness_fold0_comparison.csv`
+The mean reduction on all gaze is 0.28°, and the same direction of change appears for fixations and for saccades. The standard deviation across folds is about one degree, and the audio gain is not present on every fold. The five-fold estimate is therefore a small average improvement, concentrated on videos for which the audio-energy maps are informative.
 
-### Fold 0 — experimental dense-AEM ablations (`experimental/`)
+### Further checks on fold 0
 
-| # | Method | Error (°) | Protocol notes |
-|---|--------|----------:|----------------|
-| 1 | HAGI++ head-only | 11.50 | All gaze |
-| 2 | **Full AEM t+1** (128-dim) | **11.01** | All gaze; best dense-AEM result |
-| 3 | Full AEM t+1 + dropout 0.3 | 11.70 | All gaze |
-| 4 | AEM sequence (t+1…t+10) | ~11.50 | Fixation-only train; 30-frame head |
-| 5 | AEM past + future | ~11.40 | Fixation-only train; 30-frame head |
-| 6 | Ambisonic direction | ~11.60 | Fixation-only train; raw WAV |
+Two additional checks, restricted to fold 0, bear on the choice of encoding.
 
-Dense AEM improves over the experimental head-only baseline (11.50° → 11.01°) but **does not beat peak UV (10.36°)**. Methods 4–6 use a different training/eval protocol; treat them as fold-0 explorations, not as the main 5-fold claim.
+The primary model omits samples for which an audio-energy peak is unavailable. Retaining those samples and marking them with a validity mask raises the error to between 11.34° and 11.43°, whether the peak is the spatial argmax or an energy-weighted centroid, and whether the audio features are gated or concatenated. Under this protocol, discarding unreliable frames is preferable to imputing them.
 
-**Files:** `results/experimental_fold0_summary.csv` · `results/hagi_aem_t1_fold0/` · `results/robustness_fold0_comparison.csv`
-
-### Five-fold cross-validation — primary models
-
-| | All gaze | Fixations | Saccades |
-|---|--:|--:|--:|
-| HAGI++ (head only) | 10.69 ± 1.31 | 10.48 ± 1.35 | 11.72 ± 1.11 |
-| **HAGI++ + peak AEM UV** | **10.41 ± 1.03** | **10.18 ± 1.06** | **11.47 ± 0.86** |
-
-Mean gain on all gaze: **~0.28°**. Audio helps both fixations and saccades on average; folds 3–4 are mixed (weak AEM on some test videos).
-
-**Files:** `results/five_fold_aggregate_summary.csv`
+A dense 128-dimensional map of the next audio-energy frame reduces error from 11.50° to 11.01° relative to a matched head-only run, which remains above the peak-UV result of 10.36°. Longer map sequences and raw ambisonic direction, explored with fixation-only training, fall in the range 11.4–11.6° and are not part of the five-fold comparison.
 
 ---
 
