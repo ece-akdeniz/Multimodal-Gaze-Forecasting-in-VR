@@ -34,42 +34,34 @@ Predict the **next gaze direction** (3D unit vector) from a short input window. 
 
 ## Results
 
-The reported quantity is mean angular error, in degrees, between the predicted gaze direction and the measured direction. Lower values indicate a more accurate forecast. The principal comparison is whether a compact encoding of the future audio-energy peak improves a head-only sequence model. Unless noted, models are trained and evaluated on all gaze samples.
+Mean angular error in degrees (lower is better), on all gaze samples unless noted.
 
 ### Fold 0
 
-Fold 0 was used to compare input representations. Head orientation already accounts for most of the predictable signal. A head-only GRU regressor attains 11.25°, against 12.90° for a non-learned head proxy and 19.41° for the head-only DGaze network. Providing DGaze with visual saliency maps increases the error to 21.86° in the convolutional pipeline used here. Those two reference systems are not strictly matched to the HAGI++ runs: DGaze follows its original sample cap, and the head proxy is computed on the full synchronized corpus.
-
-Audio reduces error only when it carries future spatial structure. Channel-wise RMS at the current frame yields 11.57°. Representing the audio-energy peak at +0.5 s, +1 s, and +2 s as a 3D unit vector lowers the error to 10.57°. The same peak in UV coordinates, the primary model, reaches 10.36°, which is 0.89° below the head-only regressor.
-
-| Method | Angular error (°) | Difference from head-only HAGI++ (°) |
-|--------|------------------:|-------------------------------------:|
+| Method | Error (°) | Δ vs. head-only HAGI++ |
+|--------|----------:|-----------------------:|
 | Head proxy | 12.90 | +1.65 |
 | DGaze, head only | 19.41 | +8.16 |
-| DGaze, head and visual saliency | 21.86 | +10.61 |
+| DGaze, head and saliency | 21.86 | +10.61 |
 | HAGI++, head only | 11.25 | — |
 | HAGI++ and channel RMS | 11.57 | +0.32 |
 | HAGI++ and peak AEM, XYZ | 10.57 | −0.68 |
 | HAGI++ and peak AEM, UV | 10.36 | −0.89 |
 
+Future peak AEM in UV is the best result on this fold. Current-frame RMS does not improve on head motion alone.
+
 ### Five-fold cross-validation
 
-The head-only regressor and the primary peak-UV model were then trained on each of the five AViSal360 folds. The table gives the mean and standard deviation across folds.
+Mean ± standard deviation across folds.
 
 | Model | All gaze | Fixations | Saccades |
 |--------|----------:|----------:|---------:|
 | HAGI++, head only | 10.69 ± 1.31 | 10.48 ± 1.35 | 11.72 ± 1.11 |
 | HAGI++ and peak AEM, UV | 10.41 ± 1.03 | 10.18 ± 1.06 | 11.47 ± 0.86 |
 
-The mean reduction on all gaze is 0.28°, and the same direction of change appears for fixations and for saccades. The standard deviation across folds is about one degree, and the audio gain is not present on every fold. The five-fold estimate is therefore a small average improvement, concentrated on videos for which the audio-energy maps are informative.
+Mean reduction on all gaze: 0.28°. The gain is small relative to the variation across folds.
 
-### Further checks on fold 0
-
-Two additional checks, restricted to fold 0, bear on the choice of encoding.
-
-The primary model omits samples for which an audio-energy peak is unavailable. Retaining those samples and marking them with a validity mask raises the error to between 11.34° and 11.43°, whether the peak is the spatial argmax or an energy-weighted centroid, and whether the audio features are gated or concatenated. Under this protocol, discarding unreliable frames is preferable to imputing them.
-
-A dense 128-dimensional map of the next audio-energy frame reduces error from 11.50° to 11.01° relative to a matched head-only run, which remains above the peak-UV result of 10.36°. Longer map sequences and raw ambisonic direction, explored with fixation-only training, fall in the range 11.4–11.6° and are not part of the five-fold comparison.
+On fold 0, retaining samples with a missing AEM peak raises error to 11.34–11.43°. A dense next-frame AEM reaches 11.01°, still above peak UV.
 
 ---
 
